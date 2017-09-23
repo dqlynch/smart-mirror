@@ -11,31 +11,49 @@ class ui(Tk):
         url = ''
         for x in meme_browser.gen_urls_from_sub('me_irl'):
             url = x
-            urllib.request.urlretrieve(str(url), 'meme.jpg')
+            break;
+        urllib.request.urlretrieve(str(url), 'meme.jpg')
+
+        # Set the monitor to fullscreen
+        s_width = self.winfo_screenwidth()
+        s_height = self.winfo_screenheight()
+        geo_string = str(s_width) + "x" + str(s_height)
+        self.geometry(geo_string)
 
         # Create instance of weatherData to use
         wd = weather.weatherData()
 
-        s_width = self.winfo_screenwidth()
-        s_height = self.winfo_screenheight()
+        text_frame = Frame(self, bg="#000000")
+        text_frame.pack(fill=X)
 
+        seperator = Frame(self, bg="#000000")
+        seperator.pack(fill=BOTH, expand=1)
+
+        # Get the image and resize it
         image = Image.open('meme.jpg')
+        image = image.resize((int(s_width/2 - 50), int(s_height/2 - 50)), Image.ANTIALIAS)
         image.save('meme.png', 'PNG')
         photo = PhotoImage(file="meme.png")
-        my_image = Label(self, image=photo)
-        my_image.image = photo
-        my_image.grid(row=4, column=0)
+        self.my_image = Label(seperator, image=photo, anchor=W, bg="#000000")
+        self.my_image.image = photo
+        self.my_image.pack(fill=BOTH, side=BOTTOM)
 
-        disp_time = Message(self, text=time.strftime("%H:%M:%S"))
-        disp_time.config(width=250, font=('times', 16))
-        disp_time.grid(row=0, column=0)
+        # Display the time
+        self.disp_time = Message(text_frame, text=time.strftime("%H:%M:%S"))
+        self.disp_time.config(width=250, font=('times', 16))
+        self.disp_time.pack(side=LEFT, fill=X)
 
         # Set the message to be the current temperature
-        msg = Message(self, text=wd.data[0])
-        msg.config(width=250, font=('times', 16), anchor=N)
-        msg.grid(row=0, column=1)
+        msg = Message(text_frame, text=wd.data[0])
+        msg.config(width=250, font=('times', 16))
+        msg.pack(side=RIGHT, fill=X)
 
+    def update_clock(self):
+        now = time.strftime("%H:%M:%S")
+        self.disp_time.configure(text=now)
+        self.after(1000, self.update_clock)
 
 if __name__ == "__main__":
     root = ui()
+    root.update_clock()
     root.mainloop()
