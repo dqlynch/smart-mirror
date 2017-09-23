@@ -1,13 +1,29 @@
-from tkinter import Tk, Message
+from tkinter import *
 import weather
-root = Tk()
 
-# Create instance of weatherData to use
-wd = weather.weatherData()
+def ui():
+    root = Tk()
+    # Setup the window size
+    geo_string = str(root.winfo_screenwidth()) + "x" + str(root.winfo_screenheight())
+    root.geometry(geo_string)
 
-# Set the message to be the current temperature
-msg = Message(root, text=wd.data[0])
-msg.config(font=('times', 48))
-msg.pack()
+    # Create instance of weatherData to use
+    wd = weather.weatherData()
 
-root.mainloop()
+    # Add a seperator for the UI
+    seperator = Frame(root, height=200)
+    seperator.pack(fill=X, side=TOP)
+
+    # Set the message to be the current temperature
+    title = Message(seperator, text='Current Temperature: ')
+    title.config(width=250, font=('times', 16))
+    title.pack(side=LEFT)
+
+    msg = Message(seperator, text=wd.data[0])
+    msg.config(width=250, font=('times', 16))
+    msg.pack(side=LEFT)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    ui()
