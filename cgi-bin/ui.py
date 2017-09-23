@@ -41,17 +41,23 @@ class ui(Tk):
         self.my_image.pack(fill=BOTH, side=BOTTOM)
 
         # Display the time
-        self.disp_time = Message(text_frame, text=time.strftime("%H:%M:%S"))
-        self.disp_time.config(width=250, font=('times', 16))
+        self.disp_time = Message(text_frame, text=time.strftime("%H:%M"),
+                                 bg="#000000", fg="#FFF")
+        self.disp_time.config(width=250, font=('times', 36))
         self.disp_time.pack(side=LEFT, fill=X)
 
         # Set the message to be the current temperature
-        msg = Message(text_frame, text=wd.data[0])
-        msg.config(width=250, font=('times', 16))
+        msg = Message(text_frame, text=wd.data[0], bg="#000000", fg="#FFF")
+        msg.config(width=250, font=('times', 36))
         msg.pack(side=RIGHT, fill=X)
 
     def update_clock(self):
-        now = time.strftime("%H:%M:%S")
+        am_or_pm = "am"
+        h = int(time.strftime("%H"))
+        if(int(time.strftime("%H")) > 12):
+            h = int(time.strftime("%H")) - 12
+            am_or_pm = "pm"
+        now = str(h) + time.strftime(":%M") + " " + am_or_pm
         self.disp_time.configure(text=now)
         self.after(1000, self.update_clock)
 
