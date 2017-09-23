@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from tkinter import *
 import weather
 import meme_browser

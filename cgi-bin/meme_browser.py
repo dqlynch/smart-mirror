@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import praw
 import time
 
@@ -15,7 +17,6 @@ def gen_urls_from_sub(sub):
 
 if __name__ == '__main__':
     print('Testing meme_browser. Generating 1 url per second.')
-    input('Press enter to continue')
     for url in gen_urls_from_sub('me_irl'):
         print(url)
         time.sleep(1)
