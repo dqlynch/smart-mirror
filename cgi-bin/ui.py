@@ -17,11 +17,11 @@ class ui(Tk):
         self.geometry(geo_string)
 
         # Create instance of weatherData to use
-        wd = weather.weatherData()
+        self.wd = weather.weatherData()
 
         # Stores the first line of text
-        text_frame1 = Frame(self, bg="#000000")
-        text_frame1.pack(fill=X)
+        self.text_frame1 = Frame(self, bg="#000000")
+        self.text_frame1.pack(fill=X)
 
         # Stores the second line of text
         text_frame2 = Frame(self, bg="#000000")
@@ -32,13 +32,13 @@ class ui(Tk):
         self.seperator.pack(fill=BOTH, expand=1)
 
         # Display the time
-        self.disp_time = Message(text_frame1, text=time.strftime("%H:%M"),
+        self.disp_time = Message(self.text_frame1, text=time.strftime("%H:%M"),
                                  bg="#000000", fg="#FFF")
         self.disp_time.config(width=250, font=('arial', 36))
         self.disp_time.pack(side=LEFT, fill=X)
 
         # Set the message to be the current temperature
-        self.temp = Message(text_frame1, text=str(wd.data[0]) + "°", bg="#000000", fg="#FFF")
+        self.temp = Message(self.text_frame1, text=str(self.wd.data[0]) + "°", bg="#000000", fg="#FFF")
         self.temp.config(width=250, font=('arial', 36))
         self.temp.pack(side=RIGHT, fill=X)
 
@@ -50,10 +50,32 @@ class ui(Tk):
         self.date.pack(side=LEFT, fill=X)
 
         # Setup the weather max and main
-        self.weather_highlow = Message(text_frame2, text=str(wd.data[1]) + "/" + str(wd.data[0]),
+        self.weather_highlow = Message(text_frame2, text=str(self.wd.data[1]) + "°/" + str(self.wd.data[0]) + "°",
                                        bg="#000000", fg="#FFF")
-        self.weather_highlow.config(width=250, font=('arial'))
+        self.weather_highlow.config(width=250, font=('arial', 12), padx=20)
+        self.weather_highlow.pack(side=RIGHT, fill=X)
 
+    def display_weather_icon(self):
+        icon_name = ''
+        if(self.wd.data[3] <= 299):
+            icon_name = 'static/storm.png'
+        elif(self.wd.data[3] <= 399):
+            icon_name = 'static/sun_shower.png'
+        elif(self.wd.data[3] <= 599):
+            icon_name = 'static/water_drop.png'
+        elif(self.wd.data[3] <= 699):
+            icon_name = 'static/snowflake.png'
+        elif(self.wd.data[3] == 800):
+            icon_name = 'static/sun.png'
+        elif(self.wd.data[3] <= 899):
+            icon_name = 'static/white_cloud.png'
+        image = Image.open(icon_name)
+        image = image.resize((75, 75), Image.ANTIALIAS)
+        image.save(icon_name, 'PNG')
+        photo = PhotoImage(file=icon_name)
+        self.icon = Label(self.text_frame1, image=photo, width=75, height=75, bg="#000000")
+        self.icon.image = photo
+        self.icon.pack(fill=X, side=RIGHT)
 
     def update_clock(self):
         am_or_pm = "am"
@@ -98,4 +120,5 @@ if __name__ == "__main__":
     root = ui()
     root.update_clock()
     root.display_meme()
+    root.display_weather_icon()
     root.mainloop()

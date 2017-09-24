@@ -16,3 +16,4 @@ class weatherData:
         self.data.insert(0, format_int(data['main']['temp']*9/5 - 459.67))
         self.data.insert(1, format_int(data['main']['temp_max']*9/5 - 459.67))
         self.data.insert(2, format_int(data['main']['temp_min']*9/5 - 459.67))
+        self.data.insert(3, int(data['weather'][0]['id']))
