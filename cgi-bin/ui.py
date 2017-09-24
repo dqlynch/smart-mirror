@@ -156,6 +156,7 @@ class ui(Tk):
 
 if __name__ == "__main__":
     root = ui()
+    root.attributes('-fullscreen',True)
     root.update_clock()
     root.update_weather()
     root.display_meme()
