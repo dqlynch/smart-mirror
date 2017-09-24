@@ -2,6 +2,7 @@
 
 from tkinter import *
 import weather
+import requests
 import meme_browser
 import urllib.request
 from PIL import Image
@@ -26,6 +27,10 @@ class ui(Tk):
         # Stores the second line of text
         text_frame2 = Frame(self, bg="#000000")
         text_frame2.pack(fill=X)
+
+        # Stores one of many quotes: roast_me,
+        self.text_frame3 = Frame(self, bg="#000000")
+        self.text_frame3.pack(fill=X)
 
         # This is for the meme, if the user wants to show it
         self.seperator = Frame(self, bg="#000000")
@@ -54,6 +59,11 @@ class ui(Tk):
                                        bg="#000000", fg="#FFF")
         self.weather_highlow.config(width=250, font=('arial', 12), padx=20)
         self.weather_highlow.pack(side=RIGHT, fill=X)
+
+        # Define the quote text as blank
+        self.quote = Message(self.text_frame3, text="", bg="#000000", fg="#FFF")
+        self.quote.config(width=self.s_width, font=('arial', 24), pady=100)
+        self.quote.pack(fill=X)
 
     def display_weather_icon(self):
         icon_name = ''
@@ -87,9 +97,19 @@ class ui(Tk):
         self.disp_time.configure(text=now)
         self.after(1000, self.update_clock)
 
+    def update_weather(self):
+        self.temp.configure(text=str(self.wd.data[0]) + "°")
+        self.after(100000, self.update_weather)
+
+    def tell_me_a_joke(self):
+        url = 'http://api.icndb.com/jokes/random'
+        page = requests.get(url)
+        joke = page.json()
+        self.quote.configure(text=joke['value']['joke'])
+
     def display_meme(self):
         url = ''
-        for x in meme_browser.gen_urls_from_sub('me_irl'):
+        for x in meme_browser.gen_urls_from_sub('ProgrammerHumor'):
             url = x
             break;
         urllib.request.urlretrieve(str(url), 'meme.jpg')
@@ -119,6 +139,8 @@ class ui(Tk):
 if __name__ == "__main__":
     root = ui()
     root.update_clock()
+    root.update_weather()
     root.display_meme()
+    root.tell_me_a_joke()
     root.display_weather_icon()
     root.mainloop()
