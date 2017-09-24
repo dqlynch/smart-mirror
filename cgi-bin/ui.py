@@ -4,6 +4,7 @@ from tkinter import *
 import weather
 import requests
 import meme_browser
+import os
 import urllib.request
 from PIL import Image
 import time
@@ -65,6 +66,15 @@ class ui(Tk):
         self.quote.config(width=self.s_width, font=('arial', 24), pady=100)
         self.quote.pack(fill=X)
 
+        # Add a meme (blank until media created)
+        # photo = PhotoImage(file="static/blank.png")
+        self.my_image = None
+        try:
+            os.system('rm media/meme.jpg')
+        except Exception:
+            pass
+
+
     def display_weather_icon(self):
         icon_name = ''
         if(self.wd.data[3] <= 299):
@@ -86,6 +96,8 @@ class ui(Tk):
         self.icon = Label(self.text_frame1, image=photo, width=75, height=75, bg="#000000")
         self.icon.image = photo
         self.icon.pack(fill=X, side=RIGHT)
+        self.weather_highlow.config(width=250, font=('arial'))
+
 
     def update_clock(self):
         am_or_pm = "am"
@@ -97,9 +109,11 @@ class ui(Tk):
         self.disp_time.configure(text=now)
         self.after(1000, self.update_clock)
 
+
     def update_weather(self):
         self.temp.configure(text=str(self.wd.data[0]) + "°")
         self.after(100000, self.update_weather)
+
 
     def tell_me_a_joke(self):
         url = 'http://api.icndb.com/jokes/random'
@@ -107,15 +121,16 @@ class ui(Tk):
         joke = page.json()
         self.quote.configure(text=joke['value']['joke'])
 
-    def display_meme(self):
-        url = ''
-        for x in meme_browser.gen_urls_from_sub('ProgrammerHumor'):
-            url = x
-            break;
-        urllib.request.urlretrieve(str(url), 'meme.jpg')
 
-        # Get the image and resize it
-        image = Image.open('meme.jpg')
+    def display_meme(self):
+        # No image is fine, we just display nothing and check again in 15s
+        try:
+            image = Image.open('media/meme.jpg')
+        except IOError:
+            self.after(10000, self.display_meme)
+            return
+
+        # Only resize if image too big
         im_width, im_height = image.size
         resize_factor = 0
         if(im_height > 600):
@@ -129,11 +144,14 @@ class ui(Tk):
             new_height = int(im_height/resize_factor)
             image = image.resize((new_width, new_height), Image.ANTIALIAS)
 
-        image.save('meme.png', 'PNG')
-        photo = PhotoImage(file="meme.png")
-        self.my_image = Label(self.seperator, image=photo, anchor=W, bg="#000000")
+        image.save('media/meme.png', 'PNG')
+        photo = PhotoImage(file="media/meme.png")
+        if self.my_image is None:
+            self.my_image = Label(self.seperator, image=photo, anchor=W, bg="#000000")
+            self.my_image.pack(fill=BOTH, side=BOTTOM)
         self.my_image.image = photo
-        self.my_image.pack(fill=BOTH, side=BOTTOM)
+        self.my_image.configure(image=photo)
+        self.after(10000, self.display_meme)
 
 
 if __name__ == "__main__":
@@ -141,6 +159,6 @@ if __name__ == "__main__":
     root.update_clock()
     root.update_weather()
     root.display_meme()
-    root.tell_me_a_joke()
+    # root.tell_me_a_joke()
     root.display_weather_icon()
     root.mainloop()
