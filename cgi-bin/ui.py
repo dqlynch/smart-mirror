@@ -116,6 +116,13 @@ class ui(Tk):
 
 
     def tell_me_a_joke(self):
+        # hacky: don't display joke until meme browser starts
+        try:
+            image = Image.open('media/meme.jpg')
+        except IOError:
+            self.after(3000, self.tell_me_a_joke)
+            return
+
         url = 'http://api.icndb.com/jokes/random'
         page = requests.get(url)
         joke = page.json()
@@ -127,7 +134,7 @@ class ui(Tk):
         try:
             image = Image.open('media/meme.jpg')
         except IOError:
-            self.after(10000, self.display_meme)
+            self.after(3000, self.display_meme)
             return
 
         # Only resize if image too big
@@ -160,6 +167,6 @@ if __name__ == "__main__":
     root.update_clock()
     root.update_weather()
     root.display_meme()
-    # root.tell_me_a_joke()
+    root.tell_me_a_joke()
     root.display_weather_icon()
     root.mainloop()
